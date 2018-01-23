@@ -1,6 +1,7 @@
 # mina-shoryuken
 
-Shoryuken tasks for [Mina](https://github.com/mina-deploy/mina) deployments.
+[Shoryuken](https://github.com/phstc/shoryuken) tasks for [Mina](https://github.com/mina-deploy/mina) deployments.
+Inspired by [mina-sidekiq](https://github.com/Mic92/mina-sidekiq).
 
 ## Installation
 
@@ -20,7 +21,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'mina_shoryuken/tasks'
+#...
+
+task :setup do
+  # shoryuken needs a place to store its pid file and log file
+  command %(mkdir -p "#{fetch(:deploy_to)}/shared/pids/")
+  command %(mkdir -p "#{fetch(:deploy_to)}/shared/log/")
+end
+
+task :deploy do
+  deploy do
+    # stop accepting new workers
+    invoke :'git:clone'
+    invoke :'shoryuken:quiet'
+    invoke :'deploy:link_shared_paths'
+    ...
+
+    on :launch do
+      ...
+      invoke :'shoryuken:restart'
+    end
+  end
+end
+```
+
+## Available Tasks
+
+* shoryuken:stop
+* shoryuken:start
+* shoryuken:restart
+* shoryuken:quiet
+
 
 ## Development
 
@@ -30,7 +63,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/mina-shoryuken.
+Bug reports and pull requests are welcome on GitHub at https://github.com/beaorn/mina-shoryuken.
 
 ## License
 
